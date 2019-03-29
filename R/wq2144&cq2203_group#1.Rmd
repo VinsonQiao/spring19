@@ -1,0 +1,119 @@
+---
+title: "code"
+author: "Wensong Qiao wq2144"
+date: "2019Äê3ÔÂ28ÈÕ"
+output: html_document
+---
+#R Leaflet Code
+
+##Import Packages
+```{r}
+library(leaflet)
+library(leaflet.extras)
+library(googleway)
+```
+
+##Read data
+```{r}
+Boundaries<- geojsonio::geojson_read("C:/Users/qws/Desktop/ShinyApp/Boundaries1.geojson", what = "sp")
+crime <- read.csv("C:/Users/qws/Desktop/ShinyApp/Crime_Hour.csv")
+```
+
+##BaseMap
+```{r}
+t1<-Sys.time()
+m<-leaflet(Boundaries) %>%
+      addProviderTiles(providers$Esri.WorldTopoMap,
+                       options = providerTileOptions(noWrap = TRUE)) %>%
+      setView(lng = -73.985664, lat = 40.748440, zoom = 12) %>%
+      addPolygons(weight = 3,
+                  opacity = 1,
+                  color = "grey",
+                  dashArray = "3",
+                  fillOpacity =0.03, 
+                  highlight = highlightOptions(weight = 5,
+                                               color = "#666",
+                                               dashArray = "",
+                                               fillOpacity = 0.7,
+                                               bringToFront = TRUE),group="Borough")
+m
+t2<-Sys.time()
+t2-t1
+```
+
+##addMarkers
+```{r}
+t1<-Sys.time()
+m%>%addMarkers(lng = crime$Latitude,lat =crime$Longitude ,popup = crime$LAW_CAT_CD)
+t2<-Sys.time()
+t2-t1
+```
+ 
+##Heatmap
+```{r}
+t1<-Sys.time()
+m%>%addHeatmap(data=crime,lng = ~ Longitude, lat = ~Latitude,
+                 blur = 23, max = 0.05, radius = 15,group = "Crime Distribution" )
+t2<-Sys.time()
+t2-t1
+```
+
+
+We live in NYC, and we also hang out around here. Therefore, we care about our safety. We may want to know the distribution of crime in NYC, and what's the crime hours and types of crimes to protect ourselves. R--leaflet and tableau provede a pretty good way to help us achieve our goal. The following, we are going to use them to show the spacial data.  
+
+#Presntation
+#R
+
+##Import Packages
+```{r}
+library(graphics)
+library(knitr)
+```
+
+##BaseMap
+```{r}
+knitr::include_graphics("C:/Users/qws/Desktop/stat5293 project1/figs/11.png")
+```
+First, we build a basemap. Beacause we do use google map, the resolution is pretty high and we can zoom in and zoom out to get more information. It is very convient and I believe most of us very familiar about google map, so we do not need spend time to study it. For a further analysis£¬I divived NYC into different boroughs. All the process spend around 2secs.
+
+##addMarkers
+```{r}
+knitr::include_graphics("C:/Users/qws/Desktop/stat5293 project1/figs/22.png")
+```
+We may want to know the specific address where crimes were commited, so we make markers here. we can use popup to add any information showing in markers. If you want, "addMarkers" provides people right to chose their own icon. All process spend more tha n  6 secs.
+ 
+##Heatmap
+```{r}
+knitr::include_graphics("C:/Users/qws/Desktop/stat5293 project1/figs/33.png")
+```
+Finally, for a general understanding, we use haetmap to know the crime distribution to avoid high crime rate areas,and better to stay at low crime rate areas.We need to manually adjust parameters to make it more clear and good-looking. All process take more than 6 secs.
+
+#Tableau
+
+##readPNG()
+##Basemap
+```{r}
+knitr::include_graphics("C:/Users/qws/Desktop/stat5293 project1/figs/1.png")
+```
+First, we make our onw basemap. We can see there are lots of ckeckbos in left side. We can define our own map.
+
+##Add Markers
+```{r}
+knitr::include_graphics("C:/Users/qws/Desktop/stat5293 project1/figs/2.png")
+```
+The amazing place is that we just need to drag data and click options so that you can achieve any functions in Tableau. What's more ,we can change the color, size, lable,detail,tooltip for markers. The picture is clear and it is super user-friendly.
+
+##Heatmap
+```{r}
+knitr::include_graphics("C:/Users/qws/Desktop/stat5293 project1/figs/3.png")
+```
+Finally, we make the heatmap by Tableau, we can define any color we want, but there is not enough parameter to achieve more functions.
+
+#Compare with R and Tableau
+<br/>Advantage of Tableau</br>
+<br/>1.For most functions, Tableau is quiceker than R.</br>
+<br/>2.User friendly</br>
+<br/>3.Tableau has UI,but R need to use shinyapp to design a UI.Shinyapp is very hard to new people to use.</br>
+
+Advantage of R
+1.More parameters, you can design your own maps.
